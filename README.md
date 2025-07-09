@@ -1,69 +1,53 @@
-# React + TypeScript + Vite
+# Observability Core - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the source code for the frontend dashboard of the "Observability Core" project. It is a Single Page Application (SPA) built with React and TypeScript.
 
-Currently, two official plugins are available:
+The application communicates with the [backend service's](https://github.com/auzienko/observability-core-backend) REST API to display monitoring data, visualize metrics, and trigger actions like load tests.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+-   Real-time dashboard showing the status of all monitored services.
+-   Detailed view for each service with historical performance charts.
+-   Interactive interface for initiating and viewing load test results.
+-   Secure login and role-based access control.
+-   Modern, responsive UI built with Material-UI.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+-   **Framework/Library:** React 18, TypeScript
+-   **State Management:** Redux Toolkit
+-   **Routing:** React Router
+-   **HTTP Client:** Axios
+-   **UI Components:** Material-UI (MUI)
+-   **Charts:** Chart.js
+-   **Build Tool:** Vite
+-   **Deployment:** Docker + Nginx
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Running the Frontend (Development Mode)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+This will run the frontend in development mode with hot-reloading. **Note:** This requires the backend service to be running separately and CORS to be correctly configured on the backend.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/auzienko/observability-core-frontend.git
+    cd observability-core-frontend
+    ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173` (or another port specified by Vite).
+
+## Running via Docker
+
+To run the full system, including this frontend, please refer to the `docker-compose.yml` and instructions in the [observability-core-backend](https://github.com/auzienko/observability-core-backend) repository. The Compose file will pull the pre-built Docker image of this frontend from GHCR.
+
+## CI/CD Pipeline
+
+A GitHub Actions workflow is configured to automatically build the application, create a production-ready Docker image, and publish it to GitHub Container Registry at `ghcr.io/auzienko/observability-core-frontend:latest` on every push to the `main` branch.
