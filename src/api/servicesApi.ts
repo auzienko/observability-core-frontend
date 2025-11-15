@@ -21,6 +21,6 @@ export const servicesApi = {
     },
 
     remove: (id: string) => {
-        return apiClient.delete(`/services/${id}`);
+        return apiClient.delete(`/observability-api/services/${id}`);
     },
 };
