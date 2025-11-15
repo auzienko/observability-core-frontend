@@ -47,8 +47,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ services, onEdit }) => {
           <TableRow>
             <TableCell>Status</TableCell>
             <TableCell>Name</TableCell>
-            <TableCell>URL</TableCell>
-            <TableCell>Avg. Response (ms)</TableCell>
+            <TableCell>Last Check At</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -61,8 +60,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ services, onEdit }) => {
             >
               <TableCell>{getStatusChip(service.status)}</TableCell>
               <TableCell>{service.name}</TableCell>
-              <TableCell>{service.healthCheckScenario}</TableCell>
-              <TableCell>{service.avgResponseTimeMs ?? 'N/A'}</TableCell>
+              <TableCell>{service.lastCheckedAt ?  new Date(service.lastCheckedAt).toLocaleString() : 'N/A'}</TableCell>
               <TableCell align="right">
                 <IconButton onClick={(e) => { e.stopPropagation(); onEdit(service); }}>
                   <Edit />

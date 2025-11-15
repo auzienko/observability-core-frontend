@@ -32,13 +32,10 @@ export const ServiceFormModal: React.FC<Props> = ({ open, onClose, serviceToEdit
   useEffect(() => {
     if (serviceToEdit) {
       setName(serviceToEdit.name);
-      // Предполагаем, что healthCheckScenario будет в ответе API
       setHealthCheckScenario(serviceToEdit.healthCheckScenario || '');
-      setInterval(serviceToEdit.pollingIntervalSeconds);
     } else {
-      // Сбрасываем форму при открытии для создания
       setName('');
-      setHealthCheckScenario('{\n  "name": "Default Health Check",\n  "durationSeconds": 1,\n  "virtualUsers": 1,\n  "steps": [\n    {\n      "name": "Check Endpoint",\n      "request": {\n        "method": "GET",\n        "url": "http://example.com/actuator/health"\n      }\n    }\n  ]\n}');
+      setHealthCheckScenario('{\n  "name": "Default Health Check",\n  "runs": 1,\n  "virtualUsers": 1,\n  "steps": [\n    {\n      "name": "Check Endpoint",\n      "request": {\n        "method": "GET",\n        "url": "http://example.com/actuator/health"\n      }\n    }\n  ]\n}');
       setInterval(30);
     }
   }, [serviceToEdit, open]);
@@ -55,13 +52,20 @@ export const ServiceFormModal: React.FC<Props> = ({ open, onClose, serviceToEdit
     onClose();
   };
 
+  const toPrettyJson = (s: string) => {
+    if (s === null || s.trim() === "") {
+      return "{}";
+    }
+    const obj = JSON.parse(s);
+    return JSON.stringify(obj, null, 2);
+  }
+
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
         <Typography variant="h6">{isEditing ? 'Edit Service' : 'Register New Service'}</Typography>
         <TextField margin="normal" fullWidth label="Service Name" value={name} onChange={(e) => setName(e.target.value)} />
-        <TextField margin="normal" fullWidth multiline rows={10} label="Health Check Scenario (JSON)" value={healthCheckScenario} onChange={(e) => setHealthCheckScenario(e.target.value)} />
-        <TextField margin="normal" fullWidth label="Polling Interval (seconds)" type="number" value={interval} onChange={(e) => setInterval(parseInt(e.target.value, 10))} />
+        <TextField margin="normal" fullWidth multiline rows={10} label="Health Check Scenario (JSON)" value={ toPrettyJson(healthCheckScenario) } onChange={(e) => setHealthCheckScenario(e.target.value)} />
         <Box mt={2} display="flex" alignItems="center">
           <Button variant="contained" onClick={handleSubmit} disabled={writeStatus === 'loading'}>
             {writeStatus === 'loading' ? <CircularProgress size={24} /> : (isEditing ? 'Update' : 'Save')}

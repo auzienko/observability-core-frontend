@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import {Box, Typography } from '@mui/material';
 
 const ServiceDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-  }, [id, dispatch]);
+  }, [id]);
 
   return (
     <div>
       <Typography variant="h4">Service Details: {id}</Typography>
-      
+
       <Box my={4}>
         <Typography variant="h5">Performance History</Typography>
         {/* <PerformanceChart data={...} /> */}
@@ -24,3 +24,5 @@ const ServiceDetailPage: React.FC = () => {
     </div>
   );
 };
+
+export default ServiceDetailPage;
