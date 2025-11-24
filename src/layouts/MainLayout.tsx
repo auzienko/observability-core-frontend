@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Container, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, Button } from '@mui/material';
 import { useKeycloak } from '@react-keycloak/web';
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -13,11 +13,18 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             Observability Dashboard
           </Typography>
           {keycloak.authenticated && (
-            <Box>
-              <Typography variant="body2" component="span" sx={{ mr: 2 }}>
-                Welcome, {keycloak.tokenParsed?.preferred_username}
+            <Box display="flex" alignItems="center" gap={2}>
+              <Typography variant="body2">
+                Welcome, {keycloak.tokenParsed?.preferred_username || 'User'}
               </Typography>
-              <button onClick={() => keycloak.logout()}>Logout</button>
+              <Button
+                color="inherit"
+                variant="outlined"
+                onClick={() => keycloak.logout()}
+                size="small"
+              >
+                Logout
+              </Button>
             </Box>
           )}
         </Toolbar>

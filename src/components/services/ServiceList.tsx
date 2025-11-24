@@ -1,13 +1,20 @@
 import React from 'react';
 import type { MonitoredServiceResponse } from '../../types/service';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip } from '@mui/material';
-import { CheckCircle, Error, Help } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
-import { deleteService } from './dashboardSlice';
-import type { AppDispatch } from '../../app/store';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  IconButton,
+} from '@mui/material';
+import { CheckCircle, Error, Help, Edit, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { deleteService } from '../../store/slices/servicesSlice';
 
 interface ServiceListProps {
   services: MonitoredServiceResponse[];
@@ -26,19 +33,34 @@ const getStatusChip = (status: MonitoredServiceResponse['status']) => {
 };
 
 const ServiceList: React.FC<ServiceListProps> = ({ services, onEdit }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { writeStatus } = useAppSelector((state) => state.services);
 
-  const handleDelete = (e: React.MouseEvent, serviceId: string) => {
+  const handleDelete = async (e: React.MouseEvent, serviceId: string) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this service?')) {
-      dispatch(deleteService(serviceId));
+      try {
+        await dispatch(deleteService(serviceId)).unwrap();
+      } catch (error) {
+        console.error('Failed to delete service:', error);
+      }
     }
   };
 
   const handleRowClick = (serviceId: string) => {
     navigate(`/services/${serviceId}`);
   };
+
+  const isDeleting = writeStatus === 'loading';
+
+  if (services.length === 0) {
+    return (
+      <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <p>No services found. Create your first service!</p>
+      </Paper>
+    );
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -48,6 +70,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ services, onEdit }) => {
             <TableCell>Status</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Last Check At</TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -60,12 +83,25 @@ const ServiceList: React.FC<ServiceListProps> = ({ services, onEdit }) => {
             >
               <TableCell>{getStatusChip(service.status)}</TableCell>
               <TableCell>{service.name}</TableCell>
-              <TableCell>{service.lastCheckedAt ?  new Date(service.lastCheckedAt).toLocaleString() : 'N/A'}</TableCell>
+              <TableCell>
+                {service.lastCheckedAt
+                  ? new Date(service.lastCheckedAt).toLocaleString()
+                  : 'N/A'}
+              </TableCell>
               <TableCell align="right">
-                <IconButton onClick={(e) => { e.stopPropagation(); onEdit(service); }}>
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(service);
+                  }}
+                  disabled={isDeleting}
+                >
                   <Edit />
                 </IconButton>
-                <IconButton onClick={(e) => handleDelete(e, service.id)}>
+                <IconButton
+                  onClick={(e) => handleDelete(e, service.id)}
+                  disabled={isDeleting}
+                >
                   <Delete />
                 </IconButton>
               </TableCell>
